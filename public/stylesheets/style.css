@@ -5,3 +5,8 @@ body {
 a {
   color: #00B7FF;
 }
+.footer {
+  color: grey;
+  font-size: small;
+  font-style: italic;
+}

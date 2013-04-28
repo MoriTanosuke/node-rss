@@ -4,6 +4,7 @@ html
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
+    div.header
       ul
         li.first
           a(href='/') Home
@@ -11,5 +12,12 @@ html
           a(href='/feeds') Feeds
         li
           a(href='/articles') Articles
+      <a href="https://github.com/MoriTanosuke/node-rss"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
 
     block content
+
+    div.footer
+      p Created under 
+        a(href='http://www.gnu.de/documents/gpl.de.html') GPL
+        | . 
+        a(href='https://github.com/MoriTanosuke/node-rss') Fork this application on Github.
