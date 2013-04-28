@@ -14,7 +14,7 @@ var express = require('express')
 var app = express();
 
 var basicAuth = express.basicAuth(function(user, pass) {
-  return 'carsten' == user && 'password' == pass;
+  return 'demo' == user && 'demo' == pass;
 });
 
 // all environments
