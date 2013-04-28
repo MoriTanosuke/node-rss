@@ -13,6 +13,8 @@
     "feedparser": "0.15.2",
     "request": "2.16.6",
     "parsse": "0.0.7",
-    "mongodb" : "1.1.11"
+    "mongodb": "1.1.11",
+    "connect": "2.7.6",
+    "everyauth": "0.3.1"
   }
 }

@@ -30,8 +30,7 @@ exports.list = function(req, res) {
         for(i in items) {
           feeds.push({"title":items[i].title,"pubdate":items[i].pubdate,"link":items[i].link,"author":items[i].author,"favicon":items[i].favicon,"id":items[i]._id});
         }
-        res.set('Content-Type', 'application/json');
-        res.send(feeds);
+        res.render('feeds', { title: "Feeds", user: req.user, feeds: feeds });
       });
       //TODO send feeds to frontend
       //TODO create nice listing
@@ -51,7 +50,6 @@ exports.show = function(req, res) {
       collection.findOne({"_id":new BSON.ObjectID(id)}, function(err, item) {
         if(err) console.log(err);
         //TODO send feeds to frontend
-        res.set('Content-Type', 'application/json');
         res.send(item);
       });
     });
@@ -116,7 +114,6 @@ exports.add = function(req, res) {
         })
         .on('end', function() {
           console.log("end");
-          res.set('Content-Type', 'application/json');
           res.send('{"url":"' + url + '","status":"added","id":"' + feedId + '"}');
         });
     };

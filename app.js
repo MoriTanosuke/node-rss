@@ -4,6 +4,7 @@
  */
 
 var express = require('express')
+  , everyauth = require('everyauth')
   , routes = require('./routes')
   , feeds = require('./routes/feeds')
   , articles = require('./routes/articles')
@@ -18,12 +19,16 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.favicon());
 app.use(express.logger('dev'));
+app.use(express.basicAuth(function(user, pass) {
+  return 'carsten' == user && 'password' == pass;
+}));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-  app.use(express.cookieParser('your secret here'));
-  app.use(express.session());
+app.use(express.cookieParser('your secret here'));
+app.use(express.session());
+app.use(everyauth.middleware(app));
 app.use(app.router);
-  app.use(require('less-middleware')({ src: __dirname + '/public' }));
+app.use(require('less-middleware')({ src: __dirname + '/public' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // development only

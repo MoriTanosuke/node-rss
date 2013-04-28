@@ -20,7 +20,6 @@ exports.list = function(req, res) {
       collection.find().toArray(function(err, items) {
         if(err) console.log(err);
         //TODO check accept header
-        res.set('Content-Type', 'application/json');
         var articles = new Array();
         for(i in items) {
           articles.push({"title":items[i].title,"description":items[i].description,"pubdate":items[i].pubdate,"id":items[i]._id});
