@@ -6,6 +6,7 @@
 var express = require('express')
   , routes = require('./routes')
   , feeds = require('./routes/feeds')
+  , articles = require('./routes/articles')
   , http = require('http')
   , path = require('path');
 
@@ -35,6 +36,7 @@ app.get('/feeds', feeds.list);
 app.post('/feeds', feeds.add);
 app.get('/feeds/:id', feeds.show);
 app.delete('/feeds/:id', feeds.delete);
+app.get('/articles', articles.list);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
