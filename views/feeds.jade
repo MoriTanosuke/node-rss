@@ -2,7 +2,7 @@ extends layout
 
 block content
   h1= title
-  
+
   each feed in feeds
     li
       a(href=feed.link) #{feed.title}

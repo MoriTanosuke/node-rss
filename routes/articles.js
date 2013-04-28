@@ -17,7 +17,8 @@ exports.list = function(req, res) {
   mongo.Db.connect(mongoUri, function (err, db) {
     db.collection('articles', function(err, collection) {
       if(err) console.log(err);
-      collection.find().toArray(function(err, items) {
+      // TODO make sort order configurable
+      collection.find().sort({pubdate: -1}).toArray(function(err, items) {
         if(err) console.log(err);
         //TODO check accept header
         var articles = new Array();
