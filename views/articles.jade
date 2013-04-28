@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1 #{title}
+  
+  each article in articles
+    div
+      h2
+        a(href=article.link) #{article.title}
+      p!= article.description
+

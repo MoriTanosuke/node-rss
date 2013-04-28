@@ -24,7 +24,7 @@ exports.list = function(req, res) {
         for(i in items) {
           articles.push({"title":items[i].title,"description":items[i].description,"pubdate":items[i].pubdate,"id":items[i]._id});
         }
-        res.send(articles);
+        res.render('articles', { title: "Articles", user: req.user, articles: articles });
       });
       //TODO send feeds to frontend
       //TODO create nice listing
