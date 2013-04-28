@@ -1,6 +1,6 @@
 {
   "name": "node-rss",
-  "description": "Simple RSS reader with nodejs"
+  "description": "Simple RSS reader with nodejs",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -9,6 +9,10 @@
   "dependencies": {
     "express": "3.2.0",
     "jade": "*",
-    "less-middleware": "*"
+    "less-middleware": "*",
+    "feedparser": "0.15.2",
+    "request": "2.16.6",
+    "parsse": "0.0.7",
+    "mongodb" : "1.1.11"
   }
 }

@@ -5,7 +5,7 @@
 
 var express = require('express')
   , routes = require('./routes')
-  , user = require('./routes/user')
+  , feeds = require('./routes/feeds')
   , http = require('http')
   , path = require('path');
 
@@ -31,7 +31,10 @@ if ('development' == app.get('env')) {
 }
 
 app.get('/', routes.index);
-app.get('/users', user.list);
+app.get('/feeds', feeds.list);
+app.post('/feeds', feeds.add);
+app.get('/feeds/:id', feeds.show);
+app.delete('/feeds/:id', feeds.delete);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
