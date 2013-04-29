@@ -27,21 +27,28 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser('your secret here'));
 app.use(express.session());
-app.use(app.router);
 app.use(require('less-middleware')({ src: __dirname + '/public' }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(app.router);
 
 // development only
 if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// main routes
 app.get('/', routes.index);
+// feeds
 app.get('/feeds', basicAuth, feeds.list);
 app.post('/feeds', basicAuth, feeds.add);
+app.post('/feeds/update', basicAuth, feeds.update);
 app.get('/feeds/:id', basicAuth, feeds.show);
 app.delete('/feeds/:id', basicAuth, feeds.delete);
+// articles
 app.get('/articles', basicAuth, articles.list);
+app.all('*', function(req, res) {
+  res.redirect('/');
+});
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

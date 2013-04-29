@@ -121,3 +121,12 @@ exports.add = function(req, res) {
   });
 };
 
+/*
+ * Load new articles
+ */
+exports.update = function(req, res) {
+  var feed = req.params('feed');
+  console.log('Update %s', feed);
+  res.redirect('/feeds');
+};
+
