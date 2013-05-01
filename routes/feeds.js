@@ -10,10 +10,6 @@ mongo.Db.connect(mongoUri, function (err, db) {
     if(err) console.log(err);
     console.log('Collection "feeds" created.');
   });
-  db.createCollection('feeds', function(err, collection) {
-    if(err) console.log(err);
-    console.log('Collection "feed_articles" created.');
-  });
 });
 
 /*
@@ -48,10 +44,19 @@ exports.show = function(req, res) {
   mongo.Db.connect(mongoUri, function (err, db) {
     db.collection('feeds', function(err, collection) {
       if(err) console.log(err);
-      collection.findOne({"_id":new BSON.ObjectID(id)}, function(err, item) {
+      collection.findOne({"_id":new BSON.ObjectID(id)}, function(err, feed) {
         if(err) console.log(err);
-        //TODO send feeds to frontend
-        res.send(item);
+        // send feeds to frontend, including articles
+        db.collection('feed_articles', function(err, feed_articles) {
+          if(err) console.log(err);
+          db.collection('articles', function(err, a) {
+            if(err) console.log(err);
+            a.find({'meta.xmlurl': feed.xmlurl}).sort({pubdate: -1}).toArray(function(err, articles) {
+              if(err) console.log(err);
+              res.render('feed', {title: feed.title, user: req.user, feed: feed, articles: articles});
+            });
+          });
+        });
       });
     });
   });
@@ -84,7 +89,8 @@ exports.add = function(req, res) {
     if(err) {
       console.log(err);
     } else {
-      var feedId = -1;
+      var feed = {};
+      var articles = new Array();
       // read feed for the first time
       request(url)
         .pipe(new FeedParser())
@@ -92,30 +98,31 @@ exports.add = function(req, res) {
           console.log(err);
         })
         .on('meta', function(meta) {
-          //TODO check if feed & create if nonexisting
-          mongo.Db.connect(mongoUri, function (err, db) {
-            db.collection('feeds', function(er, collection) {
-              collection.insert(meta, {safe: true}, function(err,rs) {
-                if(err) console.log(err);
-                feedId = meta.xmlurl;
-              });
-            });
-          });
+          feed = meta;
         })
         .on('article', function(article) {
-          //TODO save article?
-          mongo.Db.connect(mongoUri, function (err, db) {
-            db.collection('articles', function(er, collection) {
-              collection.insert(article, {safe: true}, function(err,rs) {
-                if(err) console.log(err);
-              });
-              db.collection('feed_articles').insert({"feed":feedId,"article":article.guid}, {safe: false});
-            });
-          });
+          articles.push(article);
         })
         .on('end', function() {
           console.log("end");
-          res.send('{"url":"' + url + '","status":"added","id":"' + feedId + '"}');
+          //TODO check if feed & create if nonexisting
+          mongo.Db.connect(mongoUri, function (err, db) {
+            db.collection('feeds', function(er, collection) {
+              collection.insert(feed, {safe: true}, function(err,rs) {
+                if(err) console.log(err);
+              });
+            });
+          });
+          //save article
+          mongo.Db.connect(mongoUri, function (err, db) {
+            db.collection('articles', function(er, collection) {
+              for(i in articles) {
+                // store article itself
+                collection.insert(articles[i], {safe: false});
+              }
+            });
+          });
+          res.redirect('/feeds');
         });
     };
   });

@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1
+    a(href='#{feed.link}') #{title}
+  
+  each article in articles
+    article
+      h1 #{article.title}
+      div!= article.description
