@@ -2,9 +2,14 @@ extends layout
 
 block content
   h1= title
+  
+  div
+    form(method='POST',action='/feeds/')
+      input(type='text', name='url',placeholder='Enter URL to add...')
+      button(type='submit') Add
 
   each feed in feeds
     li
-      a(href=feed.link) #{feed.title}
+      a(href='/feeds/' + feed.id) #{feed.title}
       | 
       a(href='/feeds/update') update

@@ -46,6 +46,7 @@ app.get('/feeds/:id', basicAuth, feeds.show);
 app.delete('/feeds/:id', basicAuth, feeds.delete);
 // articles
 app.get('/articles', basicAuth, articles.list);
+// default catch-all
 app.all('*', function(req, res) {
   res.redirect('/');
 });
