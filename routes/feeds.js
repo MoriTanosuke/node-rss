@@ -123,4 +123,3 @@ exports.update = function(req, res) {
   console.log('Update %s', feed);
   res.redirect('/feeds');
 };
-
