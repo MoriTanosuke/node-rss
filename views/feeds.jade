@@ -13,3 +13,5 @@ block content
       a(href='/feeds/' + feed.id) #{feed.title}
       | 
       a(href='/feeds/update') update
+      form(method='POST',action='/feeds/delete/' + feed.id)
+        button(type='submit') delete
