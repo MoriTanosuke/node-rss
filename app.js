@@ -5,11 +5,14 @@
 
 var express = require('express')
   , everyauth = require('everyauth')
+  , db = require('./db')
   , routes = require('./routes')
   , feeds = require('./routes/feeds')
   , articles = require('./routes/articles')
   , http = require('http')
   , path = require('path');
+
+// configuration
 
 var app = express();
 
@@ -44,6 +47,7 @@ app.post('/feeds', basicAuth, feeds.add);
 app.post('/feeds/update', basicAuth, feeds.update);
 app.get('/feeds/:id', basicAuth, feeds.show);
 app.delete('/feeds/:id', basicAuth, feeds.delete);
+app.post('/feeds/delete/:id', basicAuth, feeds.delete);
 // articles
 app.get('/articles', basicAuth, articles.list);
 // default catch-all

@@ -5,6 +5,4 @@ block content
     a(href='#{feed.link}') #{title}
   
   each article in articles
-    article
-      h1 #{article.title}
-      div!= article.description
+    include article

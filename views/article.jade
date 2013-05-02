@@ -1,0 +1,8 @@
+header
+  h2
+    a(href='#{article.link}') #{article.title}
+  p Posted 
+    em #{article.pubdate}
+    |  by 
+    em #{article.author}
+article!= article.description

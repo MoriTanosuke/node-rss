@@ -5,7 +5,4 @@ block content
   
   each article in articles
     div
-      h2
-        a(href=article.link) #{article.title}
-      p!= article.description
-
+      include article
