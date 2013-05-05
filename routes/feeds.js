@@ -1,26 +1,23 @@
 var FeedParser = require('feedparser')
   , request = require('request')
   , parsse = require('parsse')
-  , db = require('../db');
+  , db = require('../db')
+  , mongoose = require('mongoose');
+
+var Feed = mongoose.model('Feed', feedSchema);
+var Article = mongoose.model('Article', articleSchema);
 
 /*
  * GET feeds listing
  */
 exports.list = function(req, res) {
   // load feeds from mongodb
-  db.feeds(function(err, feeds) {
+  Feed.all(function(err, feeds) {
     if(err) console.log(err);
-    // TODO make sort order configurable
-    feeds.find().sort({pubdate: -1}).toArray(function(err, items) {
-      if(err) console.log(err);
-      var feeds = new Array();
-      for(i in items) {
-        feeds.push({"title":items[i].title,"pubdate":items[i].pubdate,"link":items[i].link,"author":items[i].author,"favicon":items[i].favicon,"id":items[i]._id});
-      }
+      // TODO make sort order configurable
       res.render('feeds', { title: "Feeds", user: req.user, feeds: feeds });
-    });
-    //TODO send feeds to frontend
-    //TODO create nice listing
+      //TODO send feeds to frontend
+      //TODO create nice listing
   });
 };
 
@@ -30,18 +27,13 @@ exports.list = function(req, res) {
 exports.show = function(req, res) {
   var id = req.param('id');
   // TODO read feed from mongodb
-  db.feeds(function(err, feeds) {
+  Feed.findById(id, function(err, feed) {
     if(err) console.log(err);
-    feeds.findOne({"_id":db.ID(id)}, function(err, feed) {
+    // send feeds to frontend, including articles
+    // TODO make sort order configurable
+    Article.findByFeed(feed.xmlurl, function(err, articles) {
       if(err) console.log(err);
-      // send feeds to frontend, including articles
-      db.articles(function(err, a) {
-        if(err) console.log(err);
-        a.find({'meta.xmlurl': feed.xmlurl}).sort({pubdate: -1}).toArray(function(err, articles) {
-          if(err) console.log(err);
-          res.render('feed', {title: feed.title, user: req.user, feed: feed, articles: articles});
-        });
-      });
+      res.render('feed', {title: feed.title, user: req.user, feed: feed, articles: articles});
     });
   });
 };
@@ -51,23 +43,17 @@ exports.show = function(req, res) {
  */
 exports.delete = function(req, res) {
   var id = req.param('id');
-  console.log('id=%s', id);
   //TODO delete feed from mongodb
-  db.feeds(function(err, feeds) {
-    if(err) console.log(err);
-    console.log('feeds=%s', feeds);
-    feeds.findOne({'_id': db.ID(id)}, function(err, feed) {
-      if(err) console.log(err);
-      console.log('feed=%s', feed);
-      db.articles(function(err, articles) {
-        articles.remove({'meta.xmlurl': feed.xmlurl});
-      });
-    });
-    feeds.remove({'_id': db.ID(id)}, function(err, result) {
-      if(err) console.log(err);
-      res.redirect('/feeds');
+  Feed.findById(id, function(err, feed) {
+    if(err) console.log('Can not find feed', err);
+    Article.removeByFeed(feed.xmlurl, function(err) {
+      if(err) console.log('Can not remove articles', err);
     });
   });
+  Feed.removeById(id, function(err) {
+    if(err) console.log('Can not remove feed', err);
+  });
+  res.redirect('/feeds');
 };
 
 /*
@@ -80,7 +66,7 @@ exports.add = function(req, res) {
     if(err) {
       console.log(err);
     } else {
-      var feed = {};
+      var f = {};
       var articles = new Array();
       // read feed for the first time
       request(url)
@@ -89,7 +75,7 @@ exports.add = function(req, res) {
           console.log(err);
         })
         .on('meta', function(meta) {
-          feed = meta;
+          f = meta;
         })
         .on('article', function(article) {
           articles.push(article);
@@ -97,18 +83,30 @@ exports.add = function(req, res) {
         .on('end', function() {
           console.log("end");
           //TODO check if feed & create if nonexisting
-          db.feeds(function(er, collection) {
-            collection.insert(feed, {safe: true}, function(err,rs) {
-              if(err) console.log(err);
-            });
+          var feed = new Feed({
+            link: f.link,
+            xmlurl: f.xmlurl,
+            pubdate: f.pubdate,
+            title: f.title,
+            author: f.author
+          });
+          feed.save(function(err) {
+            if(err) console.log('can not save feed: %s', err);
           });
           //save article
-          db.articles(function(er, collection) {
-            for(i in articles) {
-              // store article itself
-              collection.insert(articles[i], {safe: false});
-            }
-          });
+          for(i in articles) {
+            var article = new Article({
+              xmlurl: articles[i].xmlurl,
+              link: articles[i].link,
+              pubdate: articles[i].pubdate,
+              title: articles[i].title,
+              description: articles[i].description,
+              meta: articles[i].meta
+            });
+            article.save(function(err) {
+              if(err) console.log('can not save article: %s', err);
+            });
+          }
           res.redirect('/feeds');
         });
     };
