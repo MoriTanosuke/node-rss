@@ -72,7 +72,7 @@ exports.add = function(req, res) {
       request(url)
         .pipe(new FeedParser())
         .on('error', function(err) {
-          console.log(err);
+          console.log('Can not read feed', err);
         })
         .on('meta', function(meta) {
           f = meta;
@@ -81,7 +81,6 @@ exports.add = function(req, res) {
           articles.push(article);
         })
         .on('end', function() {
-          console.log("end");
           //TODO check if feed & create if nonexisting
           var feed = new Feed({
             link: f.link,
