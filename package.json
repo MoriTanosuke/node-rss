@@ -7,6 +7,10 @@
     "start": "node app.js",
     "test": "mocha"
   },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  },
   "dependencies": {
     "express": "3.2.0",
     "jade": "0.30.0",
