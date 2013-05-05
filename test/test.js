@@ -1,5 +1,4 @@
 var assert = require('assert')
-  , mongo = require('mongodb')
   , db = require('../db');
 
 // test routes with ???
